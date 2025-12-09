@@ -1,0 +1,88 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(uuid())
+  email          String          @unique
+  name           String
+  companyId      String
+  tasksAsAssignee TaskAssignee[]
+  createdTasks   Task[]          @relation("CreatedBy")
+  
+  @@index([companyId])
+}
+
+model RecurringTask {
+  id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  title         String
+  description   String?
+  priority      String    @default("MEDIUM") // SQLite doesn't support enums well in Prisma sometimes, but we can verify. String is safer for fallback.
+                                           // Actually, Prisma maps enums to strings in SQLite. Let's use clean strings for simplicity if needed, 
+                                           // but standard Prisma Enums usually work. Let's try Enums, if it fails I'll revert to String.
+  companyId     String
+  creatorId     String
+  
+  // Recurrence Rules
+  intervalWeeks Int       @default(1)
+  dayOfWeek     Int       // 0-6
+  endDate       DateTime? 
+  
+  tasks         Task[]
+  
+  @@index([companyId])
+}
+
+model Task {
+  id              String         @id @default(uuid())
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  title           String
+  description     String?
+  status          String         @default("PENDING") // TaskStatus
+  priority        String         @default("MEDIUM")  // Priority
+  
+  dueAt           DateTime
+  weekStart       DateTime       // Monday of the week
+  
+  recurringTaskId String?
+  recurringTask   RecurringTask? @relation(fields: [recurringTaskId], references: [id])
+  
+  creatorId       String
+  creator         User           @relation("CreatedBy", fields: [creatorId], references: [id])
+  
+  assignees       TaskAssignee[]
+  tags            Tag[]
+  
+  companyId       String
+  
+  @@index([companyId, weekStart]) 
+  @@index([recurringTaskId])
+}
+
+model TaskAssignee {
+  taskId String
+  userId String
+  task   Task @relation(fields: [taskId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
+  
+  @@id([taskId, userId])
+}
+
+model Tag {
+  id    String @id @default(uuid())
+  name  String
+  tasks Task[]
+  
+  @@unique([name])
+}
