@@ -7,6 +7,9 @@ import { WeeklyReport } from '@/components/WeeklyReport';
 import { TeamManager } from '@/components/TeamManager';
 import Image from 'next/image';
 
+// Dynamic rendering to avoid prerendering issues with database
+export const dynamic = 'force-dynamic';
+
 // Server Action for Cron Trigger
 async function triggerCron() {
   'use server';
