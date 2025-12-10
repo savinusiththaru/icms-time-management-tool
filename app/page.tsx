@@ -14,13 +14,12 @@ export const dynamic = 'force-dynamic';
 async function triggerCron() {
   'use server';
   try {
-    // In a real scenario, we might fetch to the API route to test the full flow, 
-    // or just call the logic directly. Let's fetch the API to ensure the route is working.
-    // We need an absolute URL for server-side fetch or use relative if Next supports it (it doesn't usually).
-    // Actually, calling the logic directly is safer in Server Actions if code is shared, 
-    // but the route has the logic.
-    // Let's use localhost fetch for this verification button.
-    const res = await fetch('http://localhost:3000/api/cron/generate', { method: 'POST', cache: 'no-store' });
+    // Use NEXTAUTH_URL or construct the base URL dynamically
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/cron/generate`, {
+      method: 'POST',
+      cache: 'no-store'
+    });
     const json = await res.json();
     console.log("Cron Result:", json);
     revalidatePath('/');
