@@ -43,55 +43,27 @@ npm start
 
 ## Deploy on Vercel
 
-### Step 1: Push to GitHub
-Ensure your code is pushed to GitHub at https://github.com/savinusiththaru/icms-time-management-tool
+> **📖 For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)**
+> 
+> **⚡ Quick setup guide: [VERCEL_ENV_SETUP.md](./VERCEL_ENV_SETUP.md)**
 
-### Step 2: Connect to Vercel
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Click "New Project" and import your GitHub repository
-3. Select the project and click "Deploy"
+### Quick Overview
 
-### Step 3: Configure Database
-**Option A: Use Vercel Postgres (Recommended)**
-1. In Vercel dashboard, go to Storage → Create Database → Postgres
-2. Copy the `DATABASE_URL` connection string
-3. Add it to your project's environment variables:
-   - Settings → Environment Variables
-   - Name: `DATABASE_URL`
-   - Value: `[Your PostgreSQL connection string]`
+1. **Set up a PostgreSQL database** (Vercel Postgres recommended)
+2. **Configure environment variables** in Vercel Dashboard:
+   - `DATABASE_URL` - PostgreSQL connection string
+   - `NEXTAUTH_URL` - Your Vercel deployment URL
+   - `NEXTAUTH_SECRET` - Generate with `openssl rand -base64 32`
+3. **Deploy** your project to Vercel
+4. **Run migrations** using Vercel CLI or your database provider
 
-**Option B: Use External PostgreSQL**
-1. Get your PostgreSQL connection string (e.g., from Railway, Supabase, etc.)
-2. Add it to Vercel environment variables as `DATABASE_URL`
-
-**Option C: Use SQLite (Development Only)**
-- SQLite files won't persist on Vercel (serverless environment)
-- Switch to PostgreSQL for production
-
-### Step 4: Run Migrations on Vercel
-After setting `DATABASE_URL`, the build will automatically run `prisma generate`. To apply migrations:
-
-1. Run locally first:
-```bash
-npx prisma migrate deploy
-```
-
-2. Or manually trigger migration in Vercel by redeploying
-
-### Troubleshooting
-
-**Error: "Prisma has detected that this project was built on Vercel..."**
-- Solution: Already fixed in this project (build script includes `prisma generate`)
-
-**Error: "Application error" on Vercel deployment**
-- Check: Is `DATABASE_URL` set in Vercel environment variables?
-- Check: Has database been created and migrations applied?
+For complete step-by-step instructions, troubleshooting, and data migration guides, see [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 ## Technology Stack
 
 - **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes, Node.js
-- **Database**: Prisma ORM (SQLite/PostgreSQL)
+- **Database**: Prisma ORM (SQLite for local dev, PostgreSQL for production)
 - **Additional**: next-auth, react-hook-form, date-fns, react-pdf
 
 ## Learn More
